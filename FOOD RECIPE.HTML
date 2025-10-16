@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Recipe Site</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .section-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title::before {
+            content: '🥘';
+            font-size: 1.2em;
+        }
+        
+        .ingredients-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .ingredients {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        
+        .ingredient {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ingredient:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .ingredient input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .ingredient label {
+            cursor: pointer;
+            user-select: none;
+            flex: 1;
+        }
+        
+        .ingredient.checked {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+        }
+        
+        button {
+            padding: 14px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-generate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-clear {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-clear:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-select-all {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-select-all:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        #recipes {
+            margin-top: 30px;
+        }
+        
+        .recipes-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .recipe-count {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .recipe {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .recipe h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .recipe h3::before {
+            content: '👨‍🍳';
+        }
+        
+        .recipe-ingredients {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .recipe-ingredients strong {
+            color: #667eea;
+        }
+        
+        .recipe-steps {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .recipe-steps strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .recipe ol {
+            margin-left: 20px;
+        }
+        
+        .recipe li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .no-recipes {
+            text-align: center;
+            padding: 40px;
+            background: #fff3cd;
+            border-radius: 15px;
+            color: #856404;
+            font-size: 1.1em;
+        }
+        
+        .no-recipes::before {
+            content: '🤔';
+            display: block;
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍳 Food Recipe Finder</h1>
+        <p class="subtitle">Select ingredients and discover delicious recipes you can make!</p>
+        
+        <div class="ingredients-section">
+            <div class="section-title">Available Ingredients</div>
+            <div class="ingredients" id="ingredientsList"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn-select-all" onclick="selectAll()">Select All</button>
+            <button class="btn-generate" onclick="generateRecipes()">🔍 Find Recipes</button>
+            <button class="btn-clear" onclick="clearAll()">Clear All</button>
+        </div>
+        
+        <div id="recipes"></div>
+    </div>
+
+    <script>
+        const availableIngredients = [
+            { value: "eggs", label: "🥚 Eggs", emoji: "🥚" },
+            { value: "cheese", label: "🧀 Cheese", emoji: "🧀" },
+            { value: "tomato", label: "🍅 Tomato", emoji: "🍅" },
+            { value: "bread", label: "🍞 Bread", emoji: "🍞" },
+            { value: "lettuce", label: "🥬 Lettuce", emoji: "🥬" },
+            { value: "cucumber", label: "🥒 Cucumber", emoji: "🥒" },
+            { value: "onion", label: "🧅 Onion", emoji: "🧅" },
+            { value: "butter", label: "🧈 Butter", emoji: "🧈" },
+            { value: "salt", label: "🧂 Salt", emoji: "🧂" },
+            { value: "pepper", label: "🌶️ Pepper", emoji: "🌶️" }
+        ];
+
+        const recipes = [
+            {
+                name: "Cheese Omelette",
+                ingredients: ["eggs", "cheese", "butter", "salt", "pepper"],
+                steps: [
+                    "Beat 2 eggs in a bowl with salt and pepper.",
+                    "Heat butter in a pan over medium heat.",
+                    "Pour in the eggs and cook until almost set.",
+                    "Sprinkle cheese on top, fold the omelette, and cook until cheese melts.",
+                    "Serve hot."
+                ]
+            },
+            {
+                name: "Tomato Cheese Sandwich",
+                ingredients: ["bread", "cheese", "tomato", "butter"],
+                steps: [
+                    "Slice tomato and cheese.",
+                    "Butter two slices of bread.",
+                    "Place cheese and tomato slices between the bread.",
+                    "Grill in a pan until bread is golden and cheese melts.",
+                    "Cut in half and serve."
+                ]
+            },
+            {
+                name: "Fresh Garden Salad",
+                ingredients: ["lettuce", "tomato", "cucumber", "onion"],
+                steps: [
+                    "Chop lettuce, tomato, cucumber, and onion.",
+                    "Mix in a bowl.",
+                    "Add salt and pepper to taste.",
+                    "Drizzle with olive oil or dressing if available.",
+                    "Toss and serve fresh."
+                ]
+            },
+            {
+                name: "Scrambled Eggs",
+                ingredients: ["eggs", "butter", "salt", "pepper"],
+                steps: [
+                    "Beat 2 eggs with salt and pepper.",
+                    "Heat butter in a pan.",
+                    "Pour in eggs and stir continuously until cooked.",
+                    "Serve with toast if available."
+                ]
+            },
+            {
+                name: "Buttered Toast",
+                ingredients: ["bread", "butter"],
+                steps: [
+                    "Toast bread slices until golden brown.",
+                    "Spread butter generously while toast is hot.",
+                    "Serve immediately."
+                ]
+            }
+        ];
+
+        // Initialize ingredients list
+        function initIngredients() {
+            const container = document.getElementById('ingredientsList');
+            availableIngredients.forEach(ing => {
+                const div = document.createElement('div');
+                div.className = 'ingredient';
+                div.innerHTML = `
+                    <input type="checkbox" id="${ing.value}" value="${ing.value}" onchange="updateIngredientStyle(this)">
+                    <label for="${ing.value}">${ing.label}</label>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateIngredientStyle(checkbox) {
+            const parent = checkbox.closest('.ingredient');
+            if (checkbox.checked) {
+                parent.classList.add('checked');
+            } else {
+                parent.classList.remove('checked');
+            }
+        }
+
+        function selectAll() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+                updateIngredientStyle(cb);
+            });
+        }
+
+        function clearAll() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+                updateIngredientStyle(cb);
+            });
+            document.getElementById('recipes').innerHTML = '';
+        }
+
+        function generateRecipes() {
+            const selected = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(checkbox => checkbox.value);
+
+            if (selected.length === 0) {
+                document.getElementById('recipes').innerHTML = 
+                    '<div class="no-recipes">Please select at least one ingredient to find recipes!</div>';
+                return;
+            }
+
+            const matchingRecipes = recipes.filter(recipe => 
+                recipe.ingredients.every(ing => selected.includes(ing))
+            );
+
+            const recipesDiv = document.getElementById('recipes');
+            recipesDiv.innerHTML = '';
+
+            if (matchingRecipes.length === 0) {
+                recipesDiv.innerHTML = 
+                    '<div class="no-recipes">No recipes found with the selected ingredients. Try selecting more ingredients!</div>';
+                return;
+            }
+
+            recipesDiv.innerHTML = `
+                <div class="recipes-header">
+                    <span class="recipe-count">Found ${matchingRecipes.length} Recipe${matchingRecipes.length > 1 ? 's' : ''}!</span>
+                </div>
+            `;
+
+            matchingRecipes.forEach((recipe, index) => {
+                const recipeDiv = document.createElement('div');
+                recipeDiv.className = 'recipe';
+                recipeDiv.style.animationDelay = `${index * 0.1}s`;
+                
+                const ingredientLabels = recipe.ingredients.map(ing => {
+                    const ingData = availableIngredients.find(i => i.value === ing);
+                    return ingData ? ingData.label : ing;
+                }).join(', ');
+                
+                recipeDiv.innerHTML = `
+                    <h3>${recipe.name}</h3>
+                    <div class="recipe-ingredients">
+                        <strong>Required Ingredients:</strong> ${ingredientLabels}
+                    </div>
+                    <div class="recipe-steps">
+                        <strong>Cooking Steps:</strong>
+                        <ol>
+                            ${recipe.steps.map(step => `<li>${step}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+                
+                recipesDiv.appendChild(recipeDiv);
+            });
+        }
+
+        // Initialize on load
+        initIngredients();
+    </script>
+</body>
+</html>
